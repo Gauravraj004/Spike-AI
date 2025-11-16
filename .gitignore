@@ -39,10 +39,10 @@ wheels/
 Thumbs.db
 
 # Project specific
-/data/html/*.html
-/data/screenshots/*.png
-/data/screenshots/*.jpg
-/data/screenshots/*.jpeg
+# /data/html/*.html
+# /data/screenshots/*.png
+# /data/screenshots/*.jpg
+# /data/screenshots/*.jpeg
 /results/*.json
 summary.csv
 
