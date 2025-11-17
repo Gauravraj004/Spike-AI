@@ -14,11 +14,11 @@ openpyxl>=3.1.0
 python-dotenv>=1.0.0
 groq>=0.4.0
 
-# OCR with CPU-only PyTorch (works on any PC)
---index-url https://download.pytorch.org/whl/cpu
-torch==2.0.1+cpu
-torchvision==0.15.2+cpu
---index-url https://pypi.org/simple
+# OCR Dependencies - CPU-only PyTorch (no GPU/CUDA required)
+# Install from CPU-specific index to avoid DLL errors
+torch==2.0.1
+torchvision==0.15.2
+--extra-index-url https://download.pytorch.org/whl/cpu
 easyocr>=1.7.0
 
 # Testing
