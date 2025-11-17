@@ -4,7 +4,7 @@
 # Core Dependencies (Required)
 beautifulsoup4>=4.12.0
 lxml>=4.9.0
-numpy>=1.24.0
+numpy>=1.24.0,<2.0.0  # numpy 2.x breaks opencv-python 4.6.x compatibility
 opencv-python<=4.6.0.66  # Required by paddleocr 2.7.0.3
 pillow>=10.0.0
 scikit-image>=0.21.0
