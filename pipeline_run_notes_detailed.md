@@ -13,6 +13,16 @@
 - Reports generated: diagnosis_report.xlsx, diagnosis_report.csv
 - All 8 test cases processed in a single run
 
+**Visual Indicators in Pipeline Output:**
+- ✓ (checkmark) = CORRECT status
+- ✗ (cross) = BROKEN status
+- ⚡ (lightning) = Performance/speed indicator
+- ⚠ (warning) = Warning message
+- 💰 (money bag) = Token/cost information
+- 📊 (chart) = Report/output saved
+- ✅ (check box) = LLM analysis indicator
+- ℹ (info) = Information/processing status
+
 ---
 
 ## Test Case Results (Summary)
