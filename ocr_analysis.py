@@ -20,11 +20,23 @@ _ocr_reader = None
 _ocr_reader_initialized = False  # Track initialization status
 _ocr_import_error = None
 
-# OCR DISABLED - Network timeouts prevent model downloads
-# The pipeline works perfectly with CV + LLM only (100% accuracy without OCR)
-OCR_ENGINE = None
-_ocr_import_error = "OCR disabled due to network connectivity issues with PaddleOCR model downloads"
-print("  ℹ OCR Stage disabled (CV + LLM stages still active)")
+# Try EasyOCR first (better accuracy, no network downloads)
+try:
+    import easyocr
+    OCR_ENGINE = 'easyocr'
+    print("  ℹ Using EasyOCR (no network downloads required)")
+except Exception as e:
+    _ocr_import_error = str(e)
+    # Try PaddleOCR as fallback
+    try:
+        from paddleocr import PaddleOCR
+        OCR_ENGINE = 'paddleocr'
+        print("  ℹ Using PaddleOCR (network may be required for first-time model download)")
+    except Exception as e2:
+        print("⚠ Warning: No OCR engine available")
+        print(f"  EasyOCR: {e}")
+        print(f"  PaddleOCR: {e2}")
+        print("  Install with: pip install easyocr")
 
 @functools.lru_cache(maxsize=1)
 def get_ocr_reader_cached():
@@ -36,7 +48,9 @@ def get_ocr_reader_cached():
         if OCR_ENGINE == 'easyocr':
             print("  → Initializing EasyOCR (first run only)...")
             import easyocr
-            reader = easyocr.Reader(['en'], gpu=False, verbose=False, download_enabled=False)
+            # EasyOCR will download models on first use (~80MB one-time download)
+            # Models are cached locally for subsequent runs
+            reader = easyocr.Reader(['en'], gpu=False, verbose=False)
             print("  ✓ EasyOCR cached for subsequent calls")
             return reader
         elif OCR_ENGINE == 'paddleocr':
