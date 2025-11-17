@@ -53,7 +53,19 @@ def get_ocr_reader_cached():
         elif OCR_ENGINE == 'paddleocr':
             print("  → Initializing PaddleOCR (first run only)...")
             from paddleocr import PaddleOCR
-            reader = PaddleOCR(use_angle_cls=True, lang='en', show_log=False)
+            # PaddleOCR init signature changed between releases; try common variations
+            try:
+                reader = PaddleOCR(use_angle_cls=True, lang='en', show_log=False)
+            except TypeError:
+                try:
+                    reader = PaddleOCR(use_angle_cls=True, lang='en')
+                except Exception as e:
+                    print(f"  ⚠ PaddleOCR init failed: {e}")
+                    return None
+            except Exception as e:
+                print(f"  ⚠ PaddleOCR init failed: {e}")
+                return None
+
             print("  ✓ PaddleOCR cached for subsequent calls")
             return reader
     except Exception as e:
@@ -61,10 +73,6 @@ def get_ocr_reader_cached():
         return None
     
     return None
-
-def get_ocr_reader():
-    """Wrapper to maintain backward compatibility"""
-    return get_ocr_reader_cached()
 
 def get_ocr_reader():
     """Wrapper to maintain backward compatibility"""
