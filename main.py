@@ -11,12 +11,12 @@ APPROACH:
 - Integration: Combines all stages for higher accuracy and confidence
 
 BENEFITS OF INTEGRATION:
-✓ Stage 1 catches global visual issues
-✓ Stage 1.5 catches localized component failures
-✓ Stage 2 catches semantic issues that CV can't understand
-✓ Combined findings reduce false positives/negatives
-✓ Higher confidence when stages agree
-✓ Cost-efficient: CV filters obvious cases, LLM provides deep analysis
+[OK] Stage 1 catches global visual issues
+[OK] Stage 1.5 catches localized component failures
+[OK] Stage 2 catches semantic issues that CV can't understand
+[OK] Combined findings reduce false positives/negatives
+[OK] Higher confidence when stages agree
+[OK] Cost-efficient: CV filters obvious cases, LLM provides deep analysis
 
 Uses free Groq API for LLM analysis
 """
@@ -78,7 +78,7 @@ def preprocess_screenshot(screenshot_path: str, max_size: int = 1920) -> str:
         new_h = int(h * scale)
         img = cv2.resize(img, (new_w, new_h), interpolation=cv2.INTER_AREA)
         cv2.imwrite(screenshot_path, img)
-        print(f"  📏 Resized: {w}x{h} → {new_w}x{new_h}")
+        print(f"  [RESIZED] Resized: {w}x{h} -> {new_w}x{new_h}")
     
     return screenshot_path
 
@@ -152,22 +152,22 @@ def generate_user_friendly_explanation(status: str, root_cause: str, diagnosis: 
     """Convert technical diagnosis to plain English for end users"""
     
     if status == 'CORRECT':
-        return "✅ This page looks good! All elements loaded correctly and the page appears functional."
+        return "[OK] This page looks good! All elements loaded correctly and the page appears functional."
     
     # Map technical issues to user-friendly explanations
     explanations = {
-        'vertical': "⚠️ The page content is repeating multiple times (shown 2-3 times vertically). This usually means the page rendering failed and duplicated content instead of loading properly.",
-        'horizontal': "⚠️ The page content is repeating side-by-side. This indicates a rendering issue where content was duplicated horizontally.",
-        'cookie': "⚠️ A cookie consent popup is blocking the main content. The user needs to accept or dismiss the cookie banner before accessing the page.",
-        'security': "⚠️ The website is showing a security check page (like Cloudflare protection or CAPTCHA). The actual website content couldn't load because of this security challenge.",
-        'blank': "❌ The page is completely blank - nothing loaded at all. This could be due to a failed connection, authentication requirement, or page timeout.",
-        'region': "⚠️ Some parts of the page didn't load properly. Specific sections are blank or missing content, though other parts may look fine.",
-        'entropy': "⚠️ The page appears mostly empty or stuck on a loading screen. There's minimal content visible.",
-        'overlay': "⚠️ A modal or popup is covering the main content, preventing access to the underlying page.",
-        'http': "❌ The page returned an HTTP error (like 404 Not Found, 500 Internal Server Error). The server couldn't provide the requested content.",
-        'network': "❌ Network connection failed or timed out. The page couldn't load due to connectivity issues.",
-        'challenge': "⚠️ The website requires verification (CAPTCHA or bot detection). Access is temporarily restricted.",
-        'maintenance': "⚠️ The website is down for maintenance or temporarily unavailable."
+        'vertical': "[WARN] The page content is repeating multiple times (shown 2-3 times vertically). This usually means the page rendering failed and duplicated content instead of loading properly.",
+        'horizontal': "[WARN] The page content is repeating side-by-side. This indicates a rendering issue where content was duplicated horizontally.",
+        'cookie': "[WARN] A cookie consent popup is blocking the main content. The user needs to accept or dismiss the cookie banner before accessing the page.",
+        'security': "[WARN] The website is showing a security check page (like Cloudflare protection or CAPTCHA). The actual website content couldn't load because of this security challenge.",
+        'blank': "[ERROR] The page is completely blank - nothing loaded at all. This could be due to a failed connection, authentication requirement, or page timeout.",
+        'region': "[WARN] Some parts of the page didn't load properly. Specific sections are blank or missing content, though other parts may look fine.",
+        'entropy': "[WARN] The page appears mostly empty or stuck on a loading screen. There's minimal content visible.",
+        'overlay': "[WARN] A modal or popup is covering the main content, preventing access to the underlying page.",
+        'http': "[ERROR] The page returned an HTTP error (like 404 Not Found, 500 Internal Server Error). The server couldn't provide the requested content.",
+        'network': "[ERROR] Network connection failed or timed out. The page couldn't load due to connectivity issues.",
+        'challenge': "[WARN] The website requires verification (CAPTCHA or bot detection). Access is temporarily restricted.",
+        'maintenance': "[WARN] The website is down for maintenance or temporarily unavailable."
     }
     
     # Find matching explanation
@@ -180,7 +180,7 @@ def generate_user_friendly_explanation(status: str, root_cause: str, diagnosis: 
             return explanation
     
     # Default technical explanation
-    return f"⚠️ Issue detected: {root_cause}"
+    return f"[WARN] Issue detected: {root_cause}"
 
 def generate_suggested_fix(diagnosis: str, status: str, issue_type: str = None) -> str:
     """
@@ -332,7 +332,7 @@ def diagnose_screenshot(case: Dict[str, str]) -> Dict[str, Any]:
     
     if skip_ocr:
         stage1_conf = stage1_result.get('confidence', 0)
-        print(f"  ⚡ Skipping OCR (Stage 1 confidence: {stage1_conf:.2f})")
+        print(f"  [SKIP_OCR] Skipping OCR (Stage 1 confidence: {stage1_conf:.2f})")
         ocr_result = {'status': 'SKIPPED', 'has_mismatch': False, 'confidence': 0.0}
     else:
         # Load HTML content for mismatch check
@@ -352,7 +352,7 @@ def diagnose_screenshot(case: Dict[str, str]) -> Dict[str, Any]:
     result['evidence']['ocr_mismatch_findings'] = ocr_findings
     
     if ocr_result.get('status') == 'MISMATCH_DETECTED':
-        print(f"  ⚠ MISMATCH DETECTED!")
+        print(f"  [MISMATCH] MISMATCH DETECTED!")
         print(f"  Visible error text not in HTML:")
         for text in ocr_result['visible_error_text'][:3]:  # Show first 3
             display_text = text[:80] + '...' if len(text) > 80 else text
@@ -360,9 +360,9 @@ def diagnose_screenshot(case: Dict[str, str]) -> Dict[str, Any]:
         print(f"  Issue Type: {ocr_result.get('issue_type', 'unknown')}")
         print(f"  Confidence: {ocr_result.get('confidence', 0.0):.2f}")
     elif ocr_result.get('status') == 'NO_MISMATCH':
-        print(f"  ✓ No mismatches - visible text matches HTML")
+        print(f"  [OK] No mismatches - visible text matches HTML")
     else:
-        print(f"  ⚠ OCR skipped: {ocr_result.get('error', 'Unknown error')}")
+        print(f"  [OCR SKIP] OCR skipped: {ocr_result.get('error', 'Unknown error')}")
     
     # ========== STAGE 2: LLM SEMANTIC ANALYSIS ==========
     # Always run LLM for semantic understanding (complements CV)
@@ -385,7 +385,7 @@ def diagnose_screenshot(case: Dict[str, str]) -> Dict[str, Any]:
         llm_result = llm_analyzer.diagnose_with_llm(html_path, screenshot_path, case_name, cv_context, ocr_result)
         result['stage_results']['llm_analysis'] = llm_result
     except Exception as e:
-        print(f"  ⚠ LLM unavailable: {e}")
+        print(f"  [LLM UNAVAILABLE] {e}")
         llm_available = False
         llm_result = {
             'status': 'ERROR',
@@ -460,7 +460,7 @@ def diagnose_screenshot(case: Dict[str, str]) -> Dict[str, Any]:
         
         result['suggested_fix'] = generate_suggested_fix(result['diagnosis'], result['status'])
         result['evidence_summary'] = f"ALL STAGES DETECTED ISSUES. {' '.join(all_cv_findings + llm_findings)}"
-        print(f"  ✓✓✓ HIGHEST CONFIDENCE BROKEN (all stages agree: {result['confidence']:.2f})")
+        print(f"  [HIGHEST CONFIDENCE BROKEN] all stages agree: {result['confidence']:.2f}")
     
     # Scenario 2: Only CV (global OR regional) found issues
     elif cv_has_issues and llm_result['status'] != 'BROKEN':
@@ -479,7 +479,7 @@ def diagnose_screenshot(case: Dict[str, str]) -> Dict[str, Any]:
             result['suggested_fix'] = generate_suggested_fix(result['diagnosis'], result['status'])
         
         result['evidence_summary'] = f"CV detected visual issue. LLM context: {llm_result.get('diagnosis', 'HTML structure appears normal')}"
-        print(f"  ⚠ BROKEN (CV detection: {result['confidence']:.2f})")
+        print(f"  [BROKEN] CV detection: {result['confidence']:.2f}")
     
     # Scenario 3: Only LLM found issue - semantic/context problem
     elif not cv_has_issues and llm_result['status'] == 'BROKEN':
@@ -489,7 +489,7 @@ def diagnose_screenshot(case: Dict[str, str]) -> Dict[str, Any]:
         result['confidence'] = llm_result['confidence']
         result['suggested_fix'] = generate_suggested_fix(result['diagnosis'], result['status'])
         result['evidence_summary'] = f"LLM detected semantic issue. CV: All visual metrics passed. {' '.join(llm_findings)}"
-        print(f"  ⚠ BROKEN (LLM detection: {result['confidence']:.2f})")
+        print(f"  [BROKEN] LLM detection: {result['confidence']:.2f}")
     
     # Scenario 4: All stages passed - HIGHEST confidence CORRECT
     elif not cv_has_issues and llm_result['status'] == 'CORRECT':
@@ -504,7 +504,7 @@ def diagnose_screenshot(case: Dict[str, str]) -> Dict[str, Any]:
         
         result['suggested_fix'] = 'No action needed'
         result['evidence_summary'] = 'CV Global: Passed. CV Regional: All 12 regions OK. LLM: HTML structure normal.'
-        print(f"  ✓✓✓ HIGHEST CONFIDENCE CORRECT (all stages agree: {result['confidence']:.2f})")
+        print(f"  [HIGHEST CONFIDENCE CORRECT] all stages agree: {result['confidence']:.2f}")
     
     # Scenario 4b: CV passed, LLM ERROR (rate limit) - treat as CORRECT with note
     elif not cv_has_issues and llm_result['status'] == 'ERROR':
@@ -518,7 +518,7 @@ def diagnose_screenshot(case: Dict[str, str]) -> Dict[str, Any]:
         
         result['suggested_fix'] = 'No action needed'
         result['evidence_summary'] = f'CV Global: Passed. CV Regional: All 12 regions OK. LLM: {llm_result.get("diagnosis", "unavailable")}'
-        print(f"  ✓✓ CORRECT (CV passed, LLM unavailable: {result['confidence']:.2f})")
+        print(f"  [CORRECT] CV passed, LLM unavailable: {result['confidence']:.2f}")
     
     # Scenario 5: Conflicting or unclear results
     else:
@@ -528,7 +528,7 @@ def diagnose_screenshot(case: Dict[str, str]) -> Dict[str, Any]:
         result['confidence'] = 0.5
         result['suggested_fix'] = 'MANUAL: Review recommended - stages gave conflicting results (CV vs LLM disagreement)'
         result['evidence_summary'] = f"Conflicting results. {' '.join(all_cv_findings + llm_findings)}"
-        print(f"  ? UNCERTAIN (conflicting results: {result['confidence']:.2f})")
+        print(f"  [UNCERTAIN] conflicting results: {result['confidence']:.2f}")
     
     # Add token tracking to result
     result['token_usage'] = {
@@ -539,7 +539,7 @@ def diagnose_screenshot(case: Dict[str, str]) -> Dict[str, Any]:
     
     # Print token summary
     if total_tokens > 0:
-        print(f"\n  💰 Tokens used: {total_tokens:,} (${result['token_usage']['estimated_cost_usd']:.6f})")
+        print(f"\n  [TOKENS] Tokens used: {total_tokens:,} (${result['token_usage']['estimated_cost_usd']:.6f})")
     
     return result
 
@@ -580,8 +580,8 @@ def main():
     remaining_cases = [c for c in cases if c['case_name'] not in completed_cases]
     
     if all_results:
-        print(f"📦 Loaded checkpoint: {len(all_results)} cases already completed")
-        print(f"🔄 Resuming with {len(remaining_cases)} remaining cases\n")
+        print(f"[CHECKPOINT] Loaded checkpoint: {len(all_results)} cases already completed")
+        print(f"[RESUME] Resuming with {len(remaining_cases)} remaining cases\n")
     
     # Process metrics
     stage1_global_caught = 0
@@ -609,10 +609,10 @@ def main():
             
             if total_batches > 1:
                 print(f"\n{'='*70}")
-                print(f"📦 Batch {batch_num}/{total_batches} - Processing {len(batch)} cases")
+                print(f"[BATCH] Batch {batch_num}/{total_batches} - Processing {len(batch)} cases")
                 print(f"{'='*70}\n")
             else:
-                print(f"⚡ Parallel processing with {max_workers} workers\n")
+                print(f"[PARALLEL] Processing with {max_workers} workers\n")
             
             with ThreadPoolExecutor(max_workers=max_workers) as executor:
                 # Submit all tasks for this batch
@@ -652,11 +652,11 @@ def main():
                             }, f, indent=2, cls=NumpyEncoder)
                         
                         completed_so_far = len(all_results)
-                        print(f"✓ Progress: {completed_so_far}/{len(cases)} total completed")
+                        print(f"[PROGRESS] {completed_so_far}/{len(cases)} completed")
                         
                     except Exception as e:
                         case_name = future_to_case[future]['case_name']
-                        print(f"✗ Error processing {case_name}: {e}")
+                        print(f"[ERROR] processing {case_name}: {e}")
                         import traceback
                         traceback.print_exc()
                 
@@ -665,7 +665,7 @@ def main():
                 gc.collect()
                 
                 if total_batches > 1 and batch_num < total_batches:
-                    print(f"\n♻️  Memory cleaned for next batch\n")
+                    print(f"\n[MEMORY] Memory cleaned for next batch\n")
     else:
         # Sequential processing for single case or small batches
         for case in remaining_cases:
@@ -696,7 +696,7 @@ def main():
                         "token_usage": result.get('token_usage', {})
                     }, f, indent=2, cls=NumpyEncoder)
             except Exception as e:
-                print(f"✗ Error processing {case['case_name']}: {e}")
+                print(f"[ERROR] processing {case['case_name']}: {e}")
                 import traceback
                 traceback.print_exc()
     
@@ -766,7 +766,7 @@ def main():
     uncertain = sum(1 for r in all_results if r['status'] == 'uncertain')
     errors = sum(1 for r in all_results if r['status'] == 'error')
     
-    print(f"\nResults: {len(all_results)} total | ✓ Correct: {correct} | ✗ Broken: {broken} | ? Uncertain: {uncertain} | ⚠ Errors: {errors}")
+    print(f"\nResults: {len(all_results)} total | [OK] Correct: {correct} | [BROKEN] Broken: {broken} | [UNCERTAIN] Uncertain: {uncertain} | [ERROR] Errors: {errors}")
     
     print(f"\n3-Stage Integration Metrics:")
     print(f"  Stage 1 (Global CV) Detections: {stage1_global_caught} ({stage1_global_caught/len(cases)*100:.0f}%)")
@@ -774,17 +774,17 @@ def main():
     print(f"  Stage 2 (LLM) Detections: {stage2_llm_caught} ({stage2_llm_caught/len(cases)*100:.0f}%)")
     print(f"  Multi-stage Agreement: {all_stages_agreed}/{len(cases)} ({all_stages_agreed/len(cases)*100:.0f}%)")
     
-    print(f"\n⚡ Performance: {elapsed:.1f} seconds total ({elapsed/len(cases):.2f}s per case)")
+    print(f"\n[PERF] Performance: {elapsed:.1f} seconds total ({elapsed/len(cases):.2f}s per case)")
     
     # Token usage summary
     if total_run_tokens > 0:
-        print(f"\n💰 Token Usage:")
+        print(f"\n[COST] Token Usage:")
         print(f"  Total tokens: {total_run_tokens:,}")
         print(f"  Average per case: {total_run_tokens/len(cases):.0f} tokens")
         print(f"  Total cost: ${total_run_cost:.6f}")
         print(f"  Cost per case: ${total_run_cost/len(cases):.6f}")
     
-    print(f"\n📁 Reports saved:")
+    print(f"\n[REPORTS] Reports saved:")
     print(f"  - JSON: {RESULTS_DIR}/")
     print(f"  - Excel: diagnosis_report.xlsx")
     print(f"  - CSV: diagnosis_report.csv")

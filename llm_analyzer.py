@@ -16,6 +16,17 @@ import requests
 # Load environment
 load_dotenv()
 
+# If GROQ_API_KEY is not set, attempt to find a .env file in parent directories
+if not os.getenv('GROQ_API_KEY'):
+    # Walk up to 4 parent directories to find a .env file
+    current = Path(__file__).resolve()
+    for _ in range(4):
+        current = current.parent
+        env_path = current / '.env'
+        if env_path.exists():
+            load_dotenv(dotenv_path=str(env_path))
+            break
+
 
 def retry_on_failure(max_retries: int = 3, backoff_factor: float = 2.0):
     """

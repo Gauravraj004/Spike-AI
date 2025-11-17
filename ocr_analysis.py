@@ -54,17 +54,23 @@ def get_ocr_reader_cached():
             print("  → Initializing PaddleOCR (first run only)...")
             from paddleocr import PaddleOCR
             # PaddleOCR init signature changed between releases; try common variations
+            # PaddleOCR init signature changed between releases; try common variations
+            init_exceptions = []
             try:
                 reader = PaddleOCR(use_angle_cls=True, lang='en', show_log=False)
-            except TypeError:
+            except Exception as e1:
+                init_exceptions.append(str(e1))
                 try:
                     reader = PaddleOCR(use_angle_cls=True, lang='en')
-                except Exception as e:
-                    print(f"  ⚠ PaddleOCR init failed: {e}")
-                    return None
-            except Exception as e:
-                print(f"  ⚠ PaddleOCR init failed: {e}")
-                return None
+                except Exception as e2:
+                    init_exceptions.append(str(e2))
+                    try:
+                        # Fall back to minimal constructor
+                        reader = PaddleOCR(lang='en')
+                    except Exception as e3:
+                        init_exceptions.append(str(e3))
+                        print(f"  ⚠ PaddleOCR init failed: {' | '.join(init_exceptions)}")
+                        return None
 
             print("  ✓ PaddleOCR cached for subsequent calls")
             return reader
