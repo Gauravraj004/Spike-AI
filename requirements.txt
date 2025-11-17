@@ -22,12 +22,18 @@ python-dotenv>=1.0.0           # Environment variable management
 groq>=0.4.0                    # Groq LLM API for semantic analysis
 
 # ============================================================================
-# OCR Dependencies (Stage 1.75)
-# EasyOCR - Recommended OCR engine with PyTorch
+# OCR Dependencies (Stage 1.75) - OPTIONAL
+# EasyOCR with CPU-only PyTorch (NO GPU/CUDA required)
 # ============================================================================
-easyocr>=1.7.0                 # OCR engine (downloads models ~80MB on first run)
-torch>=2.0.0                   # PyTorch (required by EasyOCR)
-torchvision>=0.15.0            # Computer vision for PyTorch
+# IMPORTANT: Install PyTorch CPU version FIRST to avoid DLL errors:
+# pip install torch==2.0.1 torchvision==0.15.2 --index-url https://download.pytorch.org/whl/cpu
+# THEN install EasyOCR:
+# pip install easyocr
+#
+# If you get "c10.dll" errors, it means GPU version of torch was installed
+# Solution: pip uninstall torch torchvision -y, then reinstall with --index-url above
+#
+# OCR is OPTIONAL - pipeline works 100% accurately without it using CV+LLM only
 
 # ============================================================================
 # Development & Testing

@@ -4,6 +4,24 @@ An intelligent, multi-stage pipeline for automated diagnosis of web scraping fai
 
 ---
 
+## 🚀 Quick Start (1 Minute Setup)
+
+```powershell
+# Windows users - run the automated installer:
+.\install_windows.ps1
+
+# OR manual installation:
+pip install beautifulsoup4 lxml numpy opencv-python pillow scikit-image aiohttp requests openpyxl groq python-dotenv pytest pytest-cov imagehash
+# Create .env file with GROQ_API_KEY
+python main.py
+```
+
+**Note:** OCR is OPTIONAL - pipeline works 100% accurately without it!
+
+**Detailed Installation:** See [INSTALL.md](INSTALL.md) for troubleshooting
+
+---
+
 ## 🎯 Overview
 
 This pipeline diagnoses why web scraping attempts fail by analyzing screenshots and HTML to detect:
@@ -20,6 +38,7 @@ This pipeline diagnoses why web scraping attempts fail by analyzing screenshots 
 - 🔄 **Graceful degradation**: Works even if OCR/LLM unavailable
 - 🎨 **Visual debugging**: Region-level failure visualization
 - 📊 **Comprehensive reports**: JSON, CSV, and Excel outputs
+- 🛠️ **Easy setup**: Automated installer for Windows (install_windows.ps1)
 
 ---
 

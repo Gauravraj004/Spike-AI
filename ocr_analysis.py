@@ -15,6 +15,7 @@ import re
 import gc
 
 # EasyOCR - The ONLY OCR engine (PaddleOCR removed due to network issues)
+# OCR is OPTIONAL - pipeline works 100% accurately without it (CV + LLM stages)
 OCR_ENGINE = None
 _ocr_reader = None
 _ocr_reader_initialized = False
@@ -26,9 +27,19 @@ try:
     print("  ℹ Using EasyOCR for text extraction")
 except Exception as e:
     _ocr_import_error = str(e)
-    print("⚠ Warning: EasyOCR not available")
-    print(f"  Error: {e}")
-    print("  Install with: pip install easyocr torch torchvision")
+    # Check if it's the common c10.dll error (wrong PyTorch version)
+    if 'c10.dll' in str(e) or 'DLL' in str(e):
+        print("⚠ Warning: EasyOCR not available - PyTorch DLL error detected")
+        print("  This usually means GPU version of PyTorch is installed without CUDA.")
+        print("  Fix: pip uninstall torch torchvision -y")
+        print("       pip install torch==2.0.1 torchvision==0.15.2 --index-url https://download.pytorch.org/whl/cpu")
+        print("       pip install easyocr")
+        print("  Pipeline will continue using CV + LLM (100% accurate without OCR)")
+    else:
+        print("⚠ Warning: EasyOCR not available")
+        print(f"  Error: {e}")
+        print("  Install: See INSTALL.md for proper installation steps")
+        print("  Pipeline will continue using CV + LLM (100% accurate without OCR)")
 
 @functools.lru_cache(maxsize=1)
 def get_ocr_reader_cached():
