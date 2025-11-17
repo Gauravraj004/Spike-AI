@@ -25,8 +25,9 @@ python-dotenv>=1.0.0
 
 # Option B: PaddleOCR (faster, Windows-friendly)
 # Use specific compatible versions to avoid API signature mismatches
+# PaddleOCR 2.7.0.3 is stable and uses .ocr() method (not .predict())
 paddleocr==2.7.0.3
-paddlepaddle==2.5.2
+paddlepaddle==2.6.1
 
 # Note: If OCR fails to initialize (PyTorch DLL errors), pipeline will continue with CV+LLM only
 # Accuracy without OCR: 100% on current test cases (8/8)
