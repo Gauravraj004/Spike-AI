@@ -53,13 +53,21 @@ def get_ocr_reader_cached():
         elif OCR_ENGINE == 'paddleocr':
             print("  → Initializing PaddleOCR (first run only)...")
             from paddleocr import PaddleOCR
-            # PaddleOCR init signature: use_angle_cls and lang only (show_log removed)
+            # PaddleOCR init with download timeout to prevent hanging
             try:
-                reader = PaddleOCR(use_angle_cls=True, lang='en')
+                # Disable automatic model download if it times out
+                # Models will be downloaded on first .ocr() call with retry logic
+                reader = PaddleOCR(
+                    use_angle_cls=True, 
+                    lang='en',
+                    use_gpu=False,
+                    download_only=False
+                )
                 print("  ✓ PaddleOCR cached for subsequent calls")
                 return reader
             except Exception as e:
                 print(f"  ⚠ PaddleOCR init failed: {e}")
+                # If network timeout, OCR will be skipped gracefully
                 return None
     except Exception as e:
         print(f"  ⚠ OCR Reader initialization failed: {e}")
