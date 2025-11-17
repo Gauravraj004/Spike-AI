@@ -233,33 +233,7 @@ spikeai-screenshot-diagnosis/
 ```env
 # Required for LLM stage
 GROQ_API_KEY=your_groq_api_key_here
-
-# Optional: Adjust pipeline behavior
-# MAX_WORKERS=2                # Parallel processing threads (default: 2)
-# BATCH_SIZE=15                # Cases per batch (default: 15)
-# OCR_TIMEOUT=25               # OCR timeout in seconds (default: 25)
 ```
-
-### Performance Tuning
-
-**For faster processing (trade accuracy):**
-```python
-# In main.py, reduce workers and disable OCR timeout:
-max_workers = 1  # Sequential processing
-ocr_timeout = 10  # Faster OCR cutoff
-```
-
-**For higher accuracy (slower):**
-```python
-# Enable more aggressive regional analysis:
-regional_threshold = 0.05  # More sensitive (default: 0.1)
-```
-
-### Cost Optimization
-
-- **CV-only mode** (0 cost): Disable LLM stage in `main.py` by setting `llm_available = False`
-- **Batch API calls**: Current implementation processes 2 cases in parallel, adjust `max_workers` for bulk processing
-- **LLM model**: Currently uses Groq Llama 3.3 70B (~$0.0005/request), can switch to smaller models for lower cost
 
 ---
 
@@ -428,15 +402,6 @@ echo "GROQ_API_KEY=your_key_here" > .env
 - Use PaddleOCR instead of EasyOCR (faster but slightly lower accuracy)
 
 ---
-
-### Issue: Out of memory on large datasets
-
-**Solution:**
-```python
-# In main.py, reduce batch size and workers:
-BATCH_SIZE = 10  # Default: 15
-max_workers = 1  # Default: 2
-```
 
 ---
 
