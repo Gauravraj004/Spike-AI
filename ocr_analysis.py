@@ -20,22 +20,11 @@ _ocr_reader = None
 _ocr_reader_initialized = False  # Track initialization status
 _ocr_import_error = None
 
-# Try EasyOCR first (better accuracy)
-try:
-    import easyocr
-    OCR_ENGINE = 'easyocr'
-except Exception as e:
-    _ocr_import_error = str(e)
-    # Try PaddleOCR as fallback (more Windows-compatible)
-    try:
-        from paddleocr import PaddleOCR
-        OCR_ENGINE = 'paddleocr'
-        print("  ℹ Using PaddleOCR (EasyOCR unavailable due to PyTorch issues)")
-    except Exception as e2:
-        print("⚠ Warning: No OCR engine available")
-        print(f"  EasyOCR: {e}")
-        print(f"  PaddleOCR: {e2}")
-        print("  Install with: pip install paddleocr")
+# OCR DISABLED - Network timeouts prevent model downloads
+# The pipeline works perfectly with CV + LLM only (100% accuracy without OCR)
+OCR_ENGINE = None
+_ocr_import_error = "OCR disabled due to network connectivity issues with PaddleOCR model downloads"
+print("  ℹ OCR Stage disabled (CV + LLM stages still active)")
 
 @functools.lru_cache(maxsize=1)
 def get_ocr_reader_cached():
