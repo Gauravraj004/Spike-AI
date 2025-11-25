@@ -32,3 +32,15 @@ results/debug/*.png
 # OS
 .DS_Store
 Thumbs.db
+
+# Old/Unrelated Files - DO NOT TRACK
+TECHNICAL_DOCUMENTATION.md
+WORKFLOW.md
+llm_analyzer.py
+main.py
+ocr_analysis.py
+pipeline_output.txt
+pipeline_run_notes_detailed.md
+stage1_5_regional.py
+stage1_global.py
+src/excel_export.py
