@@ -7,7 +7,7 @@ Advanced VLM-powered system using GPT-4o Vision to diagnose rendering issues **A
 ### 🔍 Intelligent Visual Diagnosis
 - **GPT-4o Vision Analysis**: AI detects rendering issues in screenshots
 - **HTML Correlation**: VLM analyzes raw HTML metrics to understand root causes
-- **100% Accuracy**: Correctly identifies all issue types
+- **Accurate Detection**: Identifies rendering issues through intelligent analysis
 
 ### 🎯 AI-Generated Capture Recommendations
 - **VLM Intelligence**: AI analyzes HTML metrics and generates recommendations
@@ -118,11 +118,11 @@ Real-time progress with:
     "top_recommendation": "Wait 3-5 seconds after page load for JavaScript to populate DOM",
     "all_issues": [
       {
-        "issue": "Minimal HTML (SPA skeleton)",
-        "cause": "Only 48 elements in HTML - content loads via JavaScript",
-        "recommendation": "Wait 3-5 seconds after page load...",
-        "technical": "Use Puppeteer/Playwright with networkidle0...",
-        "severity": "critical"
+        "issue": "Issue description",
+        "cause": "Root cause analysis",
+        "recommendation": "Actionable fix recommendation",
+        "technical": "Implementation code example",
+        "severity": "critical|major|minor"
       }
     ]
   }
@@ -164,38 +164,30 @@ Real-time progress with:
 
 ```
 ================================================================================
-🔍 Analyzing: mavenagi
+🔍 Analyzing: [screenshot-name]
 ================================================================================
 🤖 Analyzing with GPT-4o vision model...
 
 ✅ Analysis Complete:
-   Status: BROKEN
-   Issue Type: partial_load
-   Severity: critical
-   Confidence: 95%
+   Status: BROKEN/CORRECT
+   Issue Type: [detected-issue-type]
+   Severity: [critical/major/minor]
+   Confidence: [percentage]
 
-📋 Diagnosis: The page appears to be a Single Page Application (SPA) 
-   with minimal HTML elements. The main content is likely intended to 
-   load dynamically via JavaScript, but it has not rendered correctly.
+📋 Diagnosis: [AI-generated diagnosis]
 
 🎯 CAPTURE IMPROVEMENT RECOMMENDATIONS:
+   [VLM-generated recommendations with severity, cause, and technical fix]
 
-   ⚠️  Minimal HTML (SPA skeleton) [CRITICAL]
-      Cause: Only 48 elements in HTML - content loads via JavaScript
-      Fix: Wait 3-5 seconds after page load for JavaScript to populate DOM
-      Technical: Use Puppeteer/Playwright with networkidle0 or wait for specific selector
-
-💡 VLM Recommendation: To prevent this issue, ensure that the screenshot 
-   capture waits 3-5 seconds after page load for JavaScript to populate 
-   the DOM. Use tools like Puppeteer or Playwright with networkidle0...
+💡 VLM Recommendation: [Detailed recommendation from AI]
 
 📊 Token Usage:
-   Input Tokens: 2,908
-   Output Tokens: 373
-   Total Tokens: 3,281
-   Cost: $0.0110
-   Time: 12.3s
-   💾 Saved: diagnosis_results\mavenagi.json
+   Input Tokens: [count]
+   Output Tokens: [count]
+   Total Tokens: [count]
+   Cost: $[amount]
+   Time: [seconds]s
+   💾 Saved: diagnosis_results\[filename].json
 ```
 
 ## Documentation
@@ -218,33 +210,6 @@ Real-time progress with:
   - Data processing pipeline
   - Component interactions
 
-## Common Capture Issues Detected
-
-| Issue Type | HTML Indicator | Severity | Example Fix |
-|------------|---------------|----------|-------------|
-| **SPA Skeleton** | <100 elements | 🔴 Critical | `await page.waitForLoadState('networkidle'); await page.waitForTimeout(3000);` |
-| **Framework Hydration** | React/Vue/Next.js detected | � Major | `await page.waitForSelector('.main-content'); await page.waitForTimeout(2000);` |
-| **Loading Indicators** | `.loading`, `.spinner` classes | 🟠 Major | `await page.waitForSelector('.loading', {state: 'hidden'});` |
-| **Modals/Overlays** | `.modal`, `.cookie` classes | 🟠 Major | `await page.click('.cookie-accept');` |
-| **Heavy AJAX** | Multiple fetch/axios patterns | 🟠 Major | `await page.waitForLoadState('networkidle', {timeout: 30000});` |
-| **Lazy Images** | `loading="lazy"` attribute | 🟡 Minor | `await page.evaluate(() => window.scrollTo(0, document.body.scrollHeight));` |
-| **Empty Containers** | Many divs with <50 chars | 🟠 Major | `await page.waitForFunction(() => document.querySelector('.main').innerText.length > 500);` |
-
-## Test Results (8 Cases)
-
-| Case | Expected | VLM Result | Correct? |
-|------|----------|------------|----------|
-| cred_articles | BROKEN | BROKEN (3× dup) | ✅ |
-| getspike_about_correct | CORRECT | CORRECT | ✅ |
-| getspike_blog_correct | BROKEN | BROKEN (dup) | ✅ |
-| getspike_pricing_correct | CORRECT | CORRECT | ✅ |
-| mavenagi_help | BROKEN | BROKEN (cookie) | ✅ |
-| revolear_home_correct | BROKEN | BROKEN (security) | ✅ |
-| success_revolear_login | BROKEN | BROKEN (blank) | ✅ |
-| theshelf_instagram | BROKEN | BROKEN (2× dup) | ✅ |
-
-**100% Accuracy** ✅
-
 ## Cost Breakdown
 
 - **Model**: GPT-4o ($2.50 per 1M input, $10.00 per 1M output)
@@ -253,13 +218,5 @@ Real-time progress with:
 - **100 screenshots**: ~$0.45
 - **1,000 screenshots**: ~$4.50
 
-## Ground Truth
 
-Cases are validated against known issues:
-- `cred_articles`: 3× vertical duplication
-- `theshelf_instagram`: 2× vertical duplication
-- `mavenagi_help`: Cookie modal overlay
-- `success_revolear_login`: Blank page
-- `revolear_home_correct`: Security block message
-- `getspike_blog_correct`: Duplicate header/footer
-- Others: Correct pages
+
