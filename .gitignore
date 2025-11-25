@@ -44,3 +44,7 @@ pipeline_run_notes_detailed.md
 stage1_5_regional.py
 stage1_global.py
 src/excel_export.py
+
+# Data Files - Keep folder structure only
+data/screenshots/*.png
+data/html/*.html
